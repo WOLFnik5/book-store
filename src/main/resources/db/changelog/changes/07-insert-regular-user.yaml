@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-regular-user
+      author: your-name
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: email
+                  value: user@bookstore.com
+              - column:
+                  name: password
+                  # BCrypt hash for password: "user1234"
+                  value: $2a$10$6qcyNVYqivTTxtqleV98SOUP2qg8JKYQKn3X37X0KxxuvX0sgOImS
+              - column:
+                  name: first_name
+                  value: Regular
+              - column:
+                  name: last_name
+                  value: User
+              - column:
+                  name: shipping_address
+                  value: 123 User Street, City, Country
+        - insert:
+            tableName: users_roles
+            columns:
+              - column:
+                  name: user_id
+                  valueComputed: (SELECT id FROM users WHERE email = 'user@bookstore.com')
+              - column:
+                  name: role_id
+                  valueComputed: (SELECT id FROM roles WHERE name = 'ROLE_USER')
