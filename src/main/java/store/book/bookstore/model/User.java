@@ -2,7 +2,6 @@ package store.book.bookstore.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -10,14 +9,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import java.io.Serial;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
@@ -25,8 +22,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Setter
 @Table(name = "users")
 public class User implements UserDetails {
-    @Serial
-    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,7 +41,10 @@ public class User implements UserDetails {
 
     private String shippingAddress;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @Column(name = "is_deleted", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean isDeleted = false;
+
+    @ManyToMany
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -57,9 +55,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-                .toList();
+        return roles;
     }
 
     @Override
@@ -84,6 +80,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return !isDeleted;
     }
 }

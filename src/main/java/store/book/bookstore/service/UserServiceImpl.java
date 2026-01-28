@@ -4,6 +4,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import store.book.bookstore.dto.UserRegistrationRequestDto;
 import store.book.bookstore.dto.UserResponseDto;
 import store.book.bookstore.exception.RegistrationException;
@@ -15,6 +16,7 @@ import store.book.bookstore.repository.RoleRepository;
 import store.book.bookstore.repository.UserRepository;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
@@ -34,10 +36,12 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
 
         Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
-                .orElseThrow(() -> new RegistrationException("Default role not found "));
+                .orElseThrow(() -> new RegistrationException("Default role "
+                        + RoleName.ROLE_USER
+                        + " not found "));
         user.setRoles(Set.of(userRole));
 
-        User savedUser = userRepository.save(user);
-        return userMapper.toDto(savedUser);
+        userRepository.save(user);
+        return userMapper.toDto(user);
     }
 }
