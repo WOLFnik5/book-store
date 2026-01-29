@@ -41,7 +41,7 @@ public class User implements UserDetails {
 
     private String shippingAddress;
 
-    @Column(name = "is_deleted", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean isDeleted = false;
 
     @ManyToMany
