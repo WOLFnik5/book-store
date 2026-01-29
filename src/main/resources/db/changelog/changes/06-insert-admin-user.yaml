@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-admin-user
+      author: your-name
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: email
+                  value: admin@bookstore.com
+              - column:
+                  name: password
+                  # BCrypt hash for password: "admin1234"
+                  value: $2a$10$zSjuyArRFCGivp8h4GpmM.kacjxYXeyZ0TbxAMeoN7JbpwGaOpBlG
+              - column:
+                  name: first_name
+                  value: Admin
+              - column:
+                  name: last_name
+                  value: User
+              - column:
+                  name: shipping_address
+                  value: Admin Office, City, Country
+        - insert:
+            tableName: users_roles
+            columns:
+              - column:
+                  name: user_id
+                  valueComputed: (SELECT id FROM users WHERE email = 'admin@bookstore.com')
+              - column:
+                  name: role_id
+                  valueComputed: (SELECT id FROM roles WHERE name = 'ROLE_ADMIN')
+        - insert:
+            tableName: users_roles
+            columns:
+              - column:
+                  name: user_id
+                  valueComputed: (SELECT id FROM users WHERE email = 'admin@bookstore.com')
+              - column:
+                  name: role_id
+                  valueComputed: (SELECT id FROM roles WHERE name = 'ROLE_USER')
