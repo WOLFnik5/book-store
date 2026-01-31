@@ -9,14 +9,20 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import store.book.bookstore.security.JwtAuthenticationFilter;
 
 @Configuration
 @EnableMethodSecurity
 @RequiredArgsConstructor
-public class SecurityConfig {
+public class SecurityConfiguration {
+    private final UserDetailsService userDetailsService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
     @Bean
     public PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
@@ -30,6 +36,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/auth/registration",
+                                "/auth/login",
                                 "/error",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
@@ -38,14 +45,15 @@ public class SecurityConfig {
                         .anyRequest()
                         .authenticated()
                 )
-                .httpBasic(httpBasic -> {})
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
     @Bean
-    public AuthenticationManager getAuthenticationManager(
+    public AuthenticationManager authenticationManager(
             AuthenticationConfiguration authenticationConfiguration)
             throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
