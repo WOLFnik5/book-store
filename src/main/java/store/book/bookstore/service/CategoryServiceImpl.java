@@ -1,0 +1,59 @@
+package store.book.bookstore.service;
+
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import store.book.bookstore.dto.CategoryDto;
+import store.book.bookstore.exception.EntityNotFoundException;
+import store.book.bookstore.mapper.CategoryMapper;
+import store.book.bookstore.model.Category;
+import store.book.bookstore.repository.CategoryRepository;
+
+@Service
+@RequiredArgsConstructor
+public class CategoryServiceImpl implements CategoryService {
+    private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
+
+    @Override
+    public List<CategoryDto> findAll(Pageable pageable) {
+        return categoryRepository.findAll(pageable).stream()
+                .map(categoryMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    public CategoryDto getById(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Category not found with id: " + id));
+        return categoryMapper.toDto(category);
+    }
+
+    @Override
+    public CategoryDto save(CategoryDto categoryDto) {
+        Category category = categoryMapper.toEntity(categoryDto);
+        Category savedCategory = categoryRepository.save(category);
+        return categoryMapper.toDto(savedCategory);
+    }
+
+    @Override
+    public CategoryDto update(Long id, CategoryDto categoryDto) {
+        if (!categoryRepository.existsById(id)) {
+            throw new EntityNotFoundException("Category not found with id: " + id);
+        }
+        Category category = categoryMapper.toEntity(categoryDto);
+        category.setId(id);
+        Category updatedCategory = categoryRepository.save(category);
+        return categoryMapper.toDto(updatedCategory);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        if (!categoryRepository.existsById(id)) {
+            throw new EntityNotFoundException("Category not found with id: " + id);
+        }
+        categoryRepository.deleteById(id);
+    }
+}

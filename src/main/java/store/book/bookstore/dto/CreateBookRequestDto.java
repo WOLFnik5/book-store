@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.Data;
 
 @Data
@@ -51,4 +53,6 @@ public class CreateBookRequestDto {
             example = "Da-Vinci-Code.jpg")
     @Size(max = 255, message = "must not exceed 255 characters")
     private String coverImage;
+
+    private Set<Long> categoryIds = new HashSet<>();
 }
