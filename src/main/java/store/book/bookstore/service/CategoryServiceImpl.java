@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import store.book.bookstore.dto.CategoryDto;
 import store.book.bookstore.exception.EntityNotFoundException;
 import store.book.bookstore.mapper.CategoryMapper;
@@ -32,6 +33,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public CategoryDto save(CategoryDto categoryDto) {
         Category category = categoryMapper.toEntity(categoryDto);
         Category savedCategory = categoryRepository.save(category);
