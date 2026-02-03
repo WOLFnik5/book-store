@@ -41,6 +41,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public CategoryDto update(Long id, CategoryDto categoryDto) {
         if (!categoryRepository.existsById(id)) {
             throw new EntityNotFoundException("Category not found with id: " + id);
@@ -52,6 +53,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
         if (!categoryRepository.existsById(id)) {
             throw new EntityNotFoundException("Category not found with id: " + id);

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import store.book.bookstore.dto.BookDto;
 import store.book.bookstore.dto.BookDtoWithoutCategoryIds;
 import store.book.bookstore.dto.BookSearchParametersDto;
@@ -30,6 +31,7 @@ public class BookServiceImpl implements BookService {
     private final CategoryRepository categoryRepository;
 
     @Override
+    @Transactional
     public BookDto save(CreateBookRequestDto requestDto) {
         Book book = bookMapper.toModel(requestDto);
         setCategories(book, requestDto.getCategoryIds());
@@ -51,6 +53,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
         if (!bookRepository.existsById(id)) {
             throw new EntityNotFoundException("Can't find book by id: " + id);
@@ -59,6 +62,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public BookDto update(Long id, CreateBookRequestDto requestDto) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -78,7 +82,6 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<BookDtoWithoutCategoryIds> findAllByCategoryId(Long categoryId) {
-        // Verify category exists
         if (!categoryRepository.existsById(categoryId)) {
             throw new EntityNotFoundException("Category not found with id: " + categoryId);
         }
