@@ -1,6 +1,5 @@
 package store.book.bookstore.service;
 
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import store.book.bookstore.dto.BookDto;
@@ -21,5 +20,5 @@ public interface BookService {
 
     Page<BookDto> search(BookSearchParametersDto searchParameters, Pageable pageable);
 
-    List<BookDtoWithoutCategoryIds> findAllByCategoryId(Long categoryId);
+    Page<BookDtoWithoutCategoryIds> findAllByCategoryId(Long categoryId, Pageable pageable);
 }

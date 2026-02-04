@@ -4,9 +4,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import store.book.bookstore.dto.BookDtoWithoutCategoryIds;
 import store.book.bookstore.dto.CategoryDto;
+import store.book.bookstore.dto.CategoryRequestDto;
 import store.book.bookstore.service.BookService;
 import store.book.bookstore.service.CategoryService;
 
@@ -41,9 +42,9 @@ public class CategoryController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CategoryDto createCategory(
-            @Parameter(description = "Category data", required = true)
-            @Valid @RequestBody CategoryDto categoryDto) {
-        return categoryService.save(categoryDto);
+            @Parameter(description = "Category request data", required = true)
+            @Valid @RequestBody CategoryRequestDto categoryRequestDto) {
+        return categoryService.save(categoryRequestDto);
     }
 
     @PreAuthorize("hasRole('USER')")
@@ -52,7 +53,7 @@ public class CategoryController {
             description = "Retrieve a list of all available categories"
     )
     @GetMapping
-    public List<CategoryDto> getAll(
+    public Page<CategoryDto> getAll(
             @ParameterObject @PageableDefault(size = 20) Pageable pageable) {
         return categoryService.findAll(pageable);
     }
@@ -78,9 +79,9 @@ public class CategoryController {
     public CategoryDto updateCategory(
             @Parameter(description = "ID of the category to update", required = true)
             @PathVariable Long id,
-            @Parameter(description = "Updated category data", required = true)
-            @Valid @RequestBody CategoryDto categoryDto) {
-        return categoryService.update(id, categoryDto);
+            @Parameter(description = "Updated category request data", required = true)
+            @Valid @RequestBody CategoryRequestDto categoryRequestDto) {
+        return categoryService.update(id, categoryRequestDto);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -102,10 +103,10 @@ public class CategoryController {
             description = "Retrieve all books that belong to a specific category"
     )
     @GetMapping("/{id}/books")
-    public List<BookDtoWithoutCategoryIds> getBooksByCategoryId(
+    public Page<BookDtoWithoutCategoryIds> getBooksByCategory(
             @Parameter(description = "ID of the category", required = true)
             @PathVariable Long id,
             @ParameterObject @PageableDefault(size = 20) Pageable pageable) {
-        return bookService.findAllByCategoryId(id);
+        return bookService.findAllByCategoryId(id, pageable);
     }
 }

@@ -1,7 +1,5 @@
 package store.book.bookstore.service;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -81,25 +79,18 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookDtoWithoutCategoryIds> findAllByCategoryId(Long categoryId) {
-        if (!categoryRepository.existsById(categoryId)) {
-            throw new EntityNotFoundException("Category not found with id: " + categoryId);
-        }
-        return bookRepository.findAllByCategoriesId(categoryId).stream()
-                .map(bookMapper::toDtoWithoutCategories)
-                .toList();
+    public Page<BookDtoWithoutCategoryIds> findAllByCategoryId(Long categoryId,
+                                                               Pageable pageable) {
+        return bookRepository.findAllByCategoriesId(categoryId, pageable)
+                .map(bookMapper::toDtoWithoutCategories);
     }
 
     private void setCategories(Book book, Set<Long> categoryIds) {
-        if (categoryIds != null && !categoryIds.isEmpty()) {
-            Set<Category> categories = categoryIds.stream()
-                    .map(id -> categoryRepository.findById(id)
-                            .orElseThrow(() -> new EntityNotFoundException(
-                                    "Category not found with id: " + id)))
-                    .collect(Collectors.toSet());
-            book.setCategories(categories);
-        } else {
-            book.setCategories(new HashSet<>());
-        }
+        Set<Category> categories = categoryIds.stream()
+                .map(id -> categoryRepository.findById(id).orElseThrow(
+                        () -> new EntityNotFoundException("Category not found with id: " + id)
+                ))
+                .collect(Collectors.toSet());
+        book.setCategories(categories);
     }
 }
