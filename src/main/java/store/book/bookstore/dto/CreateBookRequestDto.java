@@ -3,10 +3,13 @@ package store.book.bookstore.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.Data;
 
 @Data
@@ -51,4 +54,6 @@ public class CreateBookRequestDto {
             example = "Da-Vinci-Code.jpg")
     @Size(max = 255, message = "must not exceed 255 characters")
     private String coverImage;
+    @NotEmpty
+    private Set<Long> categoryIds = new HashSet<>();
 }
